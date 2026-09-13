@@ -20,26 +20,79 @@ the pages rather than to a parser.
 This is a port. [wlmarkdown](https://github.com/wikilayer/wlmarkdown) leads, both
 ports read the same rules and answer the same corpus, and the major and minor
 numbers move together to say so. What they promise is agreement on the corpus, and
-the corpus does not reach everything: the two differences it cannot reach are named
-below, and the README says where the parsers underneath differ.
+the corpus does not reach everything: the difference it cannot reach is named below,
+and the README says where the parsers underneath differ. Which version of
+swift-markdown this is built against is in `Package.swift`, where it cannot go stale.
+
+The version is 0.x because the shape is still settling: every reader of these two
+libraries so far has moved something in their API rather than working around it, so
+a minor may still change an answer you relied on. Read the entry before taking one.
 
 ## Where the two ports do not agree
 
-Neither has a corpus case, so a green corpus does not prove the ports answer alike.
-Both are open at the version above:
+One difference is left, and no corpus case can reach it, so a green corpus does not
+prove the ports answer alike. It is open in the newest release, the first listed
+below:
 
 - A bare URL is a link in Go and plain words here. The dialect asks every port to
   switch linkifying on; swift-markdown offers no way to, so this one cannot until it
   does.
-- A construct nested deeper than a callout's own children — a map inside a list
-  inside the callout — leaves its marker and coordinates among the callout's words
-  here, and does not in Go.
 
 Signatures are not repeated here; the README carries an example of each call. This
 file says only what changed between versions and what that asks of you.
 
 Changes are documented here in the format of
 [Keep a Changelog](https://keepachangelog.com/).
+
+## 0.6.0 - 2026-09-13
+
+### Fixed
+
+- `declined(in:)` no longer reports a quote the dialect made an unreadable block of.
+  It answered about quotes `place(in:)` turned down, and since 0.5.0 that call also
+  stays silent about a point nowhere on Earth — so a host logging or badging what was
+  turned down complained about a block it had just drawn, and the leading port
+  reported nothing for the same document. If you wired `declined(in:)` to anything a
+  reader sees, this is the release that stops it crying wolf.
+- The words of an unreadable block are the whole quote's, not its first paragraph's.
+
+  ```
+  > [!MAP]
+  > 999, 20
+  >
+  > The street I meant.
+  ```
+
+  handed back `[!MAP] 999, 20` and now hands back `[!MAP] 999, 20 The street I
+  meant.` Everything written below the coordinates was missing from `recognise` and
+  from `unreadable(in:)`, which is the one place the author is shown what to fix.
+  0.5.0 said those words came back exactly as they stand in the source; for a quote
+  of more than one paragraph that was not true, and this is where it becomes true.
+  Markdown among them has always survived here, links included, so that half of the
+  leading port's fix for the same release has no counterpart in this one.
+- A callout no longer takes the words of a construct nested deeper than its own
+  children. A map inside a list inside a callout left its marker and coordinates
+  among the callout's words, so a host drawing that callout printed `[!MAP]` and a
+  pair of numbers in the middle of a sentence, and drew the map underneath as well.
+  The leading port answered this correctly and nothing held the line; the corpus
+  holds it now, and the list of differences below is one line shorter for it.
+
+### Changed
+
+- The corpus now names what the dialect turned down, case by case, and this port is
+  asked it there rather than in tests of its own. Two cases that lived only here
+  moved into it as well, a caption outside ASCII and a caption opening on tabs, so
+  the leading port is asked them too.
+- The minor moves with [the leading port](https://github.com/wikilayer/wlmarkdown),
+  which fixes two answers of its own for this release and adds `Kinds()`, a list of
+  node kinds that matters only to a host registering goldmark renderers. There is
+  nothing to match here: this port hands back `Found` values, and `markers`,
+  `classes` and `schemes` already name everything that can arrive in one.
+
+  Between them the four fixes close every difference the corpus can reach, and both
+  ports now answer all of it alike. Matching major and minor said that much from
+  0.4.0 on and were wrong to; what makes it true now is the corpus asking about what
+  was turned down as well.
 
 ## 0.5.0 - 2026-09-13
 
@@ -80,9 +133,6 @@ Changes are documented here in the format of
   it, so the marker was missing from what the dialect made and from what it turned
   down at once. That is a third way a quote is turned down, beside the two 0.3.4
   named: a marker under a quote the dialect never entered.
-- 0.3.1 called these calls wiring rather than a change of behaviour and took a patch
-  number on that ground. They were behaviour, and they disagreed with the leading
-  port; the ground was wrong.
 - `Dialect()` reads and parses the rules once for the process rather than on every
   construction. A host building one per link paid a YAML parse per link.
 
@@ -98,11 +148,6 @@ Changes are documented here in the format of
   rule for what opens a construct. Equal major and minor are supposed to say the two
   ports behave alike; on this they did not.
 
-### Fixed
-
-- `README.md` names the calls 0.3.1 added. The changelog said the README carried an
-  example of each and it carried one, for `recognise`.
-
 ## 0.3.3 - 2026-09-13
 
 ### Fixed
@@ -112,10 +157,6 @@ Changes are documented here in the format of
   cut the line short; the caption of a map written that way arrived missing
   characters. A slice whose width does not match what the columns claim is now
   refused, and the parsed text is used instead.
-
-### Changed
-
-- The identifier-name rule is no longer switched off in `.swiftlint.yml`.
 
 ## 0.3.2 - 2026-09-13
 
