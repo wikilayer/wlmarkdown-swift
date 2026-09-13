@@ -56,6 +56,14 @@ struct ReadingTests {
                 "an ordinary quote stops the dialect, and a host must get the answer recognise gives")
     }
 
+    @Test func aPointNowhereOnEarthIsNotAPlace() {
+        let (written, reading) = quote("> [!MAP]\n> 999, 20.4489\n")
+        #expect(reading.place(in: written) == nil,
+                "drawing a map of it puts the reader somewhere that is not where the page says")
+        #expect(reading.unreadable(in: written) == "[!MAP] 999, 20.4489",
+                "the words come back so a host can show what was written and say it cannot be read")
+    }
+
     @Test func aQuoteThatIsNeitherOpensNothing() {
         let (written, reading) = quote("> Plain quoted words.\n")
         #expect(reading.calloutClass(of: written) == nil)

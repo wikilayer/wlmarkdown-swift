@@ -5,6 +5,16 @@ struct Coordinate: Codable, Sendable {
     let signs: String
     let digits: String
     let point: String
+    let latitudeWithin: String
+    let longitudeWithin: String
+
+    enum CodingKeys: String, CodingKey {
+        case signs
+        case digits
+        case point
+        case latitudeWithin = "latitude_within"
+        case longitudeWithin = "longitude_within"
+    }
 }
 
 struct Rules: Codable, Sendable {

@@ -16,6 +16,16 @@ public struct Reading {
     }
 
     public func place(in quote: BlockQuote) -> Found? {
+        guard let written = written(in: quote), written.kind == "map" else { return nil }
+        return written
+    }
+
+    public func unreadable(in quote: BlockQuote) -> String? {
+        guard let written = written(in: quote), written.kind == "unreadable" else { return nil }
+        return written.text
+    }
+
+    private func written(in quote: BlockQuote) -> Found? {
         guard standsWhereTheDialectLooks(quote),
               scan.openingLine(of: quote) == dialect.rules.mapMarker
         else { return nil }

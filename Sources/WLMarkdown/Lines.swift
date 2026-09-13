@@ -26,6 +26,16 @@ extension Dialect {
         rules.refSchemes.first { destination.hasPrefix($0 + ":") } ?? ""
     }
 
+    func within(_ spoken: String, _ bound: String) -> Bool {
+        let unsigned = spoken.drop { rules.coordinate.signs.contains($0) }
+        let parts = String(unsigned).components(separatedBy: rules.coordinate.point)
+        let whole = parts[0].drop { $0 == "0" }
+        if whole.isEmpty { return true }
+        if whole.count != bound.count { return whole.count < bound.count }
+        if whole != bound { return whole < bound }
+        return parts.count == 1 || parts[1].allSatisfy { $0 == "0" }
+    }
+
     func place(in quote: BlockQuote, scan: Scan) -> Found? {
         guard let paragraph = quote.child(at: 0) as? Paragraph else { return nil }
         let lines = scan.rawLines(of: paragraph)
@@ -36,6 +46,11 @@ extension Dialect {
         let lat = written[0].trimmingCharacters(in: blankSet)
         let lng = written[1].trimmingCharacters(in: blankSet)
         guard reads(lat), reads(lng) else { return nil }
+        guard within(lat, rules.coordinate.latitudeWithin),
+              within(lng, rules.coordinate.longitudeWithin)
+        else {
+            return Found(kind: "unreadable", text: squeezed(lines.joined(separator: " ")))
+        }
 
         let caption = lines.dropFirst(2)
             .map { $0.trimmingCharacters(in: blankSet) }
