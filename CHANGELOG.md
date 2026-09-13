@@ -28,6 +28,32 @@ file says only what changed between versions and what that asks of you.
 Changes are documented here in the format of
 [Keep a Changelog](https://keepachangelog.com/).
 
+## 0.3.3 - 2026-09-13
+
+### Fixed
+
+- A line opening on tabs lost its tail. cmark reports the same columns for a line
+  whether or not tabs precede its content, so reading the source by those columns
+  cut the line short; the caption of a map written that way arrived missing
+  characters. A slice whose width does not match what the columns claim is now
+  refused, and the parsed text is used instead.
+
+### Changed
+
+- The identifier-name rule is no longer switched off in `.swiftlint.yml`.
+
+### Known differences from the leading port
+
+Neither of these has a corpus case, so the corpus passing does not prove the two
+ports agree:
+
+- A bare URL is a link in Go and plain words here. The dialect asks every port to
+  switch linkifying on; swift-markdown offers no way to, so this one cannot until
+  it does.
+- A construct nested deeper than a callout's own children — a map inside a list
+  inside the callout — leaves its marker and coordinates among the callout's words
+  here, and does not in Go.
+
 ## 0.3.2 - 2026-09-13
 
 ### Fixed

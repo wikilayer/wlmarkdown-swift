@@ -32,6 +32,18 @@ struct ReadingTests {
         #expect(place?.caption == "Belgrade.")
     }
 
+    @Test func wordsOutsideASCIIDoNotSplitACharacter() {
+        let (written, reading) = quote("> [!MAP]\n> 44.7866, 20.4489\n> Кнез Михаилова, Београд\n")
+        #expect(reading.place(in: written)?.caption == "Кнез Михаилова, Београд",
+                "a column counts bytes while a caption reads characters, and a cut between the halves of one letter loses the rest of the line")
+    }
+
+    @Test func aTabBeforeACaptionDoesNotEatIt() {
+        let (written, reading) = quote("> [!MAP]\n> 44.7866, 20.4489\n> \t\tКнез Михаилова\n")
+        #expect(reading.place(in: written)?.caption == "Кнез Михаилова",
+                "a tab is one character and several columns, and counting it as one loses the tail")
+    }
+
     @Test func aQuoteThatIsNeitherOpensNothing() {
         let (written, reading) = quote("> Plain quoted words.\n")
         #expect(reading.calloutClass(of: written) == nil)

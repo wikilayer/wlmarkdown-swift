@@ -10,21 +10,21 @@ struct Scan {
         lines = source.components(separatedBy: "\n")
     }
 
-    func raw(from: SourceLocation, to: SourceLocation) -> String {
-        guard from.line == to.line, from.line >= 1, from.line <= lines.count else {
+    func raw(from: SourceLocation, to ending: SourceLocation) -> String {
+        guard from.line == ending.line, from.line >= 1, from.line <= lines.count else {
             return ""
         }
         let held = lines[from.line - 1]
-        let spelled = held.utf8
-        guard let start = spelled.index(
-            spelled.startIndex, offsetBy: max(from.column - 1, 0), limitedBy: spelled.endIndex
-        ), let end = spelled.index(
-            start, offsetBy: max(to.column - from.column, 0), limitedBy: spelled.endIndex
-        ) else {
+        guard let start = held.index(atColumn: from.column),
+              let end = held.index(atColumn: ending.column),
+              start <= end
+        else {
             return ""
         }
         return String(held[start..<end])
     }
+
+    static let tabStop = 4
 
     func rawLines(of paragraph: Paragraph) -> [String] {
         var written: [String] = []
@@ -35,11 +35,14 @@ struct Scan {
                 guard let range = inline.range else { return nil }
                 return (range.lowerBound, range.upperBound)
             }
+            let parsed = line.map { dialect.words(of: $0) }.joined()
             guard let first = ranged.first, let last = ranged.last else {
-                written.append(line.map { dialect.words(of: $0) }.joined())
+                written.append(parsed)
                 return
             }
-            written.append(raw(from: first.0, to: last.1))
+            let spelled = raw(from: first.0, to: last.1)
+            let asWide = last.1.column - first.0.column
+            written.append(spelled.utf8.count == asWide ? spelled : parsed)
         }
 
         for inline in paragraph.inlineChildren {
@@ -72,5 +75,20 @@ struct Scan {
     func isAutolink(_ link: Markdown.Link) -> Bool {
         guard let range = link.range else { return false }
         return raw(from: range.lowerBound, to: range.upperBound).hasPrefix("<")
+    }
+}
+
+extension String {
+    func index(atColumn column: Int) -> String.Index? {
+        var counted = 1
+        var walked = startIndex
+        while counted < column, walked < endIndex {
+            let letter = self[walked]
+            counted += letter == "\t"
+                ? Scan.tabStop - (counted - 1) % Scan.tabStop
+                : letter.utf8.count
+            walked = index(after: walked)
+        }
+        return counted == column ? walked : nil
     }
 }

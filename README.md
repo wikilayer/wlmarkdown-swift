@@ -63,6 +63,19 @@ A task list item keeps its `[ ]` in the text cmark hands back, so the mark is
 stripped here; goldmark reports the checkbox as a node of its own and never puts it
 in the words.
 
+A line whose source cannot be identified from the columns cmark reports — a line
+opening on tabs, whose expansion those columns do not carry — falls back to the
+parsed text. What that costs is the markdown of a caption written that way, a link
+arriving as its words rather than as `[words](page:1)`. Reading it blind would cost
+the tail of the line instead.
+
+Two differences are the dialect's and not a parser's, and neither is closed here.
+A bare URL is a link on the site and plain words here, because the dialect asks a
+port to switch linkifying on and swift-markdown offers no way to. And what a
+callout's words are when a construct is nested deeper than its own children is
+answered differently by the two ports. Both are named in the changelog and neither
+has a corpus case, which is why the corpus alone does not prove the ports agree.
+
 ## Running it
 
 ```sh
