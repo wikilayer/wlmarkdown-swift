@@ -35,7 +35,7 @@ struct ReadingTests {
     @Test func wordsOutsideASCIIDoNotSplitACharacter() {
         let (written, reading) = quote("> [!MAP]\n> 44.7866, 20.4489\n> Кнез Михаилова, Београд\n")
         #expect(reading.place(in: written)?.caption == "Кнез Михаилова, Београд",
-                "a column counts bytes while a caption reads characters, and a cut between the halves of one letter loses the rest of the line")
+                "a cut between the halves of one letter loses the line")
     }
 
     @Test func aTabBeforeACaptionDoesNotEatIt() {
