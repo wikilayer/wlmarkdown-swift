@@ -17,7 +17,7 @@ struct Written: Codable {
 
 struct DialectTests {
     static var rules: Written {
-        Embedded.getYAML(Bundle.module, path: "rules.yaml")
+        Embedded.getYAML(Rulebook.bundle, path: Rulebook.file)
     }
 
     @Test func everyMarkerTheRulesNameCarriesItsClass() {

@@ -21,7 +21,6 @@ build:
 
 sync-corpus:
 	cp $(CORPUS)/rules.yaml $(RULES)/
-	cp $(CORPUS)/rules.yaml $(CASES)/
 	cp $(CORPUS)/dialect.yaml $(CASES)/
 
 install:

@@ -33,10 +33,15 @@ struct Rules: Codable, Sendable {
     }
 }
 
+enum Rulebook {
+    static let bundle = Bundle.module
+    static let file = "rules.yaml"
+}
+
 public struct Dialect: Sendable {
     let rules: Rules
 
-    private static let written: Rules = Embedded.getYAML(Bundle.module, path: "rules.yaml")
+    private static let written: Rules = Embedded.getYAML(Rulebook.bundle, path: Rulebook.file)
 
     public init() {
         rules = Self.written

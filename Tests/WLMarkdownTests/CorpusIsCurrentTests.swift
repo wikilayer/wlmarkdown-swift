@@ -3,32 +3,37 @@ import Testing
 @testable import WLMarkdown
 
 struct CorpusIsCurrentTests {
-    static let copiedFromTheLeadingPort = ["rules.yaml", "dialect.yaml"]
+    static let copiedFromTheLeadingPort = [
+        "Sources/WLMarkdown/Resources/rules.yaml",
+        "Tests/WLMarkdownTests/Resources/dialect.yaml"
+    ]
 
     @Test(
         "every file copied from the leading port is still the one it holds",
         arguments: copiedFromTheLeadingPort
     )
-    func stillTheirs(_ name: String) async throws {
-        let held = try held(name)
-        let theirs = try await leading(name)
+    func stillTheirs(_ path: String) async throws {
+        let here = Self.packageRoot.appending(path: path)
+        let held = try Data(contentsOf: here)
+        let theirs = try await leading(here.lastPathComponent)
         #expect(held == theirs, Comment(rawValue:
-            "\(name) here is not the one the leading port holds, so this port answers an older "
+            "\(path) is not the file the leading port holds, so this port answers an older "
                 + "dialect than the others; run make sync-corpus"))
     }
 
-    @Test func theListIsNotEmpty() {
-        #expect(Self.copiedFromTheLeadingPort.count > 1, "a list this short cannot have been read")
+    @Test func theListNamesEveryCopySyncCorpusMakes() {
+        #expect(
+            Self.copiedFromTheLeadingPort.count == 2,
+            "sync-corpus copies the rules to the library and the cases to the tests"
+        )
     }
 
     private static let leadingPort = "https://raw.githubusercontent.com/wikilayer/wlmarkdown/main/corpus/"
 
-    private func held(_ name: String) throws -> Data {
-        guard let url = Bundle.module.url(forResource: name, withExtension: nil) else {
-            throw Absent(what: "\(name) is not in the test bundle; run make sync-corpus")
-        }
-        return try Data(contentsOf: url)
-    }
+    private static let packageRoot = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent()
+        .deletingLastPathComponent()
+        .deletingLastPathComponent()
 
     private func leading(_ name: String) async throws -> Data {
         guard let url = URL(string: Self.leadingPort + name) else {
