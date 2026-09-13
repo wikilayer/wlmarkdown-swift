@@ -19,14 +19,44 @@ the pages rather than to a parser.
 
 This is a port. [wlmarkdown](https://github.com/wikilayer/wlmarkdown) leads, both
 ports read the same rules and answer the same corpus, and the major and minor
-numbers move together to say the behaviour is the same. The README names where the
-two parsers underneath differ.
+numbers move together to say so. What they promise is agreement on the corpus, and
+the corpus does not reach everything: the two differences it cannot reach are named
+below, and the README says where the parsers underneath differ.
+
+## Where the two ports do not agree
+
+Neither has a corpus case, so a green corpus does not prove the ports answer alike.
+Both are open at the version above:
+
+- A bare URL is a link in Go and plain words here. The dialect asks every port to
+  switch linkifying on; swift-markdown offers no way to, so this one cannot until it
+  does.
+- A construct nested deeper than a callout's own children — a map inside a list
+  inside the callout — leaves its marker and coordinates among the callout's words
+  here, and does not in Go.
 
 Signatures are not repeated here; the README carries an example of each call. This
 file says only what changed between versions and what that asks of you.
 
 Changes are documented here in the format of
 [Keep a Changelog](https://keepachangelog.com/).
+
+## 0.3.4 - 2026-09-13
+
+### Added
+
+- `Reading.declined(in:)`, the quotes this dialect declined to make a construct of,
+  one entry per quote with the marker it carried: a map whose coordinates did not
+  read, or a callout written inside another callout's quote, which the dialect
+  leaves as it found it. The leading port has answered this since its own 0.3.0, and
+  until now a host here had to walk the tree itself and write out the dialect's own
+  rule for what opens a construct. Equal major and minor are supposed to say the two
+  ports behave alike; on this they did not.
+
+### Fixed
+
+- `README.md` names the calls 0.3.1 added. The changelog said the README carried an
+  example of each and it carried one, for `recognise`.
 
 ## 0.3.3 - 2026-09-13
 
@@ -41,18 +71,6 @@ Changes are documented here in the format of
 ### Changed
 
 - The identifier-name rule is no longer switched off in `.swiftlint.yml`.
-
-### Known differences from the leading port
-
-Neither of these has a corpus case, so the corpus passing does not prove the two
-ports agree:
-
-- A bare URL is a link in Go and plain words here. The dialect asks every port to
-  switch linkifying on; swift-markdown offers no way to, so this one cannot until
-  it does.
-- A construct nested deeper than a callout's own children — a map inside a list
-  inside the callout — leaves its marker and coordinates among the callout's words
-  here, and does not in Go.
 
 ## 0.3.2 - 2026-09-13
 
@@ -75,7 +93,7 @@ ports agree:
   these; with only `recognise` it would have to write the dialect's rules a second
   time to know what it is looking at. The leading port answers the same questions
   through its goldmark extensions, which is why this is wiring rather than a change
-  of behaviour, and why the number after the dot is the only one that moved.
+  of behaviour, and why the third number is the only one that moved.
 
 ## 0.3.0 - 2026-09-13
 

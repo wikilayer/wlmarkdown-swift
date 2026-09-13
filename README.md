@@ -33,6 +33,33 @@ store answers.
 what can come back in `Found`. Read them rather than writing down what is in them
 today.
 
+## Asking about a document you parsed yourself
+
+A host that builds its own tree out of swift-markdown holds a `BlockQuote` and needs
+to know what it is. `Reading` answers that, over the source the document was parsed
+from:
+
+```swift
+let source = page.body
+let reading = Reading(source)
+for quote in Document(parsing: source).children.compactMap({ $0 as? BlockQuote }) {
+    if let place = reading.place(in: quote) { … }          // lat, lng, caption
+    if let named = reading.calloutClass(of: quote) { … }   // note, tip, warning …
+}
+```
+
+`opensAConstruct(_:)` says whether a quote carries any of the dialect's markers, and
+`isAutolink(_:)` tells a bracketed link from `<https://example.com>`. `Dialect`'s
+`scheme(in:)` names the scheme of a destination, or none.
+
+`reading.declined(in: document)` hands back the quotes the dialect turned down, one
+entry per quote with the marker it carried: a map whose coordinates did not read, or
+a callout written inside another callout's quote. Deciding that from outside would
+mean writing the dialect's rule for what opens a construct a second time.
+
+A `Reading` is built on one source string and answers by line and column, so it must
+be the string its document was parsed from.
+
 ## What it does not do
 
 It recognises. A title for a callout, an icon, a colour, a link resolved against a
