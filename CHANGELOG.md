@@ -28,6 +28,15 @@ file says only what changed between versions and what that asks of you.
 Changes are documented here in the format of
 [Keep a Changelog](https://keepachangelog.com/).
 
+## 0.3.2 - 2026-09-13
+
+### Fixed
+
+- swift-markdown is required by version rather than by a pinned revision. A package
+  pinned to a revision cannot be taken by version at all, so 0.3.0 and 0.3.1 could
+  be cloned but not depended on, which is most of what a library is for. The corpus
+  answers the same on 0.8.0, the version now asked for.
+
 ## 0.3.1 - 2026-09-13
 
 ### Added

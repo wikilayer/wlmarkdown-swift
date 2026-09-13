@@ -11,10 +11,7 @@ let package = Package(
         .library(name: "WLMarkdown", targets: ["WLMarkdown"])
     ],
     dependencies: [
-        .package(
-            url: "https://github.com/swiftlang/swift-markdown.git",
-            revision: "de3e245b6044386b623ecce11d1ccb5fe766e3db"
-        ),
+        .package(url: "https://github.com/swiftlang/swift-markdown.git", from: "0.8.0"),
         .package(url: "https://github.com/botforge-pro/swift-embed", from: "1.5.0")
     ],
     targets: [
