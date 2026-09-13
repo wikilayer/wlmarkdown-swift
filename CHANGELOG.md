@@ -1,9 +1,16 @@
 # Changelog
 
-A Swift package, `WLMarkdown`, built on
-[swift-markdown](https://github.com/swiftlang/swift-markdown). It recognises the
-markdown dialect of WikiLayer, a wiki whose pages are a tree of nodes: GitHub-flavoured
-markdown plus callouts, map embeds, and links naming a node instead of a URL.
+A Swift package, `WLMarkdown`, at
+[github.com/wikilayer/wlmarkdown-swift](https://github.com/wikilayer/wlmarkdown-swift),
+built on [swift-markdown](https://github.com/swiftlang/swift-markdown):
+
+```swift
+.package(url: "https://github.com/wikilayer/wlmarkdown-swift.git", from: "0.6.0")
+```
+
+It recognises the markdown dialect of WikiLayer, a wiki whose pages are a tree of
+nodes: GitHub-flavoured markdown plus callouts, map embeds, and links naming a node
+instead of a URL.
 
 ```markdown
 > [!WARNING]
@@ -31,8 +38,7 @@ a minor may still change an answer you relied on. Read the entry before taking o
 ## Where the two ports do not agree
 
 One difference is left, and no corpus case can reach it, so a green corpus does not
-prove the ports answer alike. It is open in the newest release, the first listed
-below:
+prove the ports answer alike. It is open in 0.6.0:
 
 - A bare URL is a link in Go and plain words here. The dialect asks every port to
   switch linkifying on; swift-markdown offers no way to, so this one cannot until it
@@ -46,14 +52,35 @@ Changes are documented here in the format of
 
 ## 0.6.0 - 2026-09-13
 
+### Changed
+
+- The corpus now names what the dialect turned down, case by case, and this port
+  answers it there. A caption written outside ASCII and a caption opening on tabs
+  went in with it, so the leading port is asked them too.
+- The minor moves with [the leading port](https://github.com/wikilayer/wlmarkdown),
+  which fixes two answers of its own for this release and adds `Kinds()`, a list of
+  node kinds that only a host registering goldmark renderers has a use for. There is
+  nothing to match here: this port hands back `Found` values, and `markers`,
+  `classes` and `schemes` already name everything that can arrive in one.
+
+  Between them these fixes close every difference the corpus can reach, and both
+  ports now answer all of it alike. Matching major and minor said that much from
+  0.4.0 on and were wrong to; what makes it true now is that the corpus asks about
+  what was turned down as well.
+
 ### Fixed
 
 - `declined(in:)` no longer reports a quote the dialect made an unreadable block of.
   It answered about quotes `place(in:)` turned down, and since 0.5.0 that call also
   stays silent about a point nowhere on Earth — so a host logging or badging what was
   turned down complained about a block it had just drawn, and the leading port
-  reported nothing for the same document. If you wired `declined(in:)` to anything a
-  reader sees, this is the release that stops it crying wolf.
+  reported nothing for the same document.
+
+  **This narrows what the call returns.** If you were counting what the dialect could
+  not read, `declined(in:)` alone no longer counts it: ask `unreadable(in:)` of the
+  quote as well, and you have what the old call gave you, with the two apart instead
+  of run together. If you were logging it, this is the release that stops it crying
+  wolf and nothing is asked of you.
 - The words of an unreadable block are the whole quote's, not its first paragraph's.
 
   ```
@@ -63,36 +90,21 @@ Changes are documented here in the format of
   > The street I meant.
   ```
 
-  handed back `[!MAP] 999, 20` and now hands back `[!MAP] 999, 20 The street I
-  meant.` Everything written below the coordinates was missing from `recognise` and
-  from `unreadable(in:)`, which is the one place the author is shown what to fix.
-  0.5.0 said those words came back exactly as they stand in the source; for a quote
-  of more than one paragraph that was not true, and this is where it becomes true.
-  Markdown among them has always survived here, links included, so that half of the
-  leading port's fix for the same release has no counterpart in this one.
+  `recognise` and `unreadable(in:)` handed back `[!MAP] 999, 20` and now hand back
+  `[!MAP] 999, 20 The street I meant.` — one line, the paragraphs joined by a single
+  space and every run of blanks squeezed to one, as the words of a callout have
+  always been. Everything written below the coordinates was missing from the one
+  place the author is shown what to fix. 0.5.0 said those words came back exactly as
+  they stand in the source; for a quote of more than one paragraph that was not true,
+  and this is where it becomes true.
+
+  Markdown among them has always survived here, links included, so the other half of
+  the leading port's fix for this release has no counterpart in this one.
 - A callout no longer takes the words of a construct nested deeper than its own
   children. A map inside a list inside a callout left its marker and coordinates
   among the callout's words, so a host drawing that callout printed `[!MAP]` and a
   pair of numbers in the middle of a sentence, and drew the map underneath as well.
-  The leading port answered this correctly and nothing held the line; the corpus
-  holds it now, and the list of differences below is one line shorter for it.
-
-### Changed
-
-- The corpus now names what the dialect turned down, case by case, and this port is
-  asked it there rather than in tests of its own. Two cases that lived only here
-  moved into it as well, a caption outside ASCII and a caption opening on tabs, so
-  the leading port is asked them too.
-- The minor moves with [the leading port](https://github.com/wikilayer/wlmarkdown),
-  which fixes two answers of its own for this release and adds `Kinds()`, a list of
-  node kinds that matters only to a host registering goldmark renderers. There is
-  nothing to match here: this port hands back `Found` values, and `markers`,
-  `classes` and `schemes` already name everything that can arrive in one.
-
-  Between them the four fixes close every difference the corpus can reach, and both
-  ports now answer all of it alike. Matching major and minor said that much from
-  0.4.0 on and were wrong to; what makes it true now is the corpus asking about what
-  was turned down as well.
+  The leading port has always answered this the other way.
 
 ## 0.5.0 - 2026-09-13
 
