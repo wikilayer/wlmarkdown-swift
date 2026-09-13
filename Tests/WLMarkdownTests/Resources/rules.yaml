@@ -1,0 +1,19 @@
+callout_class_by_marker:
+  "[!NOTE]": note
+  "[!TIP]": tip
+  "[!IMPORTANT]": important
+  "[!WARNING]": warning
+  "[!CAUTION]": caution
+
+map_marker: "[!MAP]"
+
+coordinate:
+  signs: "+-"
+  digits: "0123456789"
+  point: "."
+
+blanks: " \t\n\v\f\r"
+
+ref_schemes:
+  - page
+  - block
