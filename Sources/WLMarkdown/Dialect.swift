@@ -26,8 +26,10 @@ struct Rules: Codable, Sendable {
 public struct Dialect: Sendable {
     let rules: Rules
 
+    private static let written: Rules = Embedded.getYAML(Bundle.module, path: "rules.yaml")
+
     public init() {
-        rules = Embedded.getYAML(Bundle.module, path: "rules.yaml")
+        rules = Self.written
     }
 
     public var markers: [String] {

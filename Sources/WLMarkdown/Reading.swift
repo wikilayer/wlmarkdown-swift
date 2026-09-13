@@ -11,12 +11,29 @@ public struct Reading {
     }
 
     public func calloutClass(of quote: BlockQuote) -> String? {
-        dialect.rules.calloutClassByMarker[scan.openingLine(of: quote)]
+        guard quoteAbove(quote) == nil else { return nil }
+        return dialect.rules.calloutClassByMarker[scan.openingLine(of: quote)]
     }
 
     public func place(in quote: BlockQuote) -> Found? {
-        guard scan.openingLine(of: quote) == dialect.rules.mapMarker else { return nil }
+        guard standsWhereTheDialectLooks(quote),
+              scan.openingLine(of: quote) == dialect.rules.mapMarker
+        else { return nil }
         return dialect.place(in: quote, scan: scan)
+    }
+
+    func quoteAbove(_ markup: any Markup) -> BlockQuote? {
+        var walked = markup.parent
+        while let above = walked {
+            if let quote = above as? BlockQuote { return quote }
+            walked = above.parent
+        }
+        return nil
+    }
+
+    func standsWhereTheDialectLooks(_ quote: BlockQuote) -> Bool {
+        guard let above = quoteAbove(quote) else { return true }
+        return calloutClass(of: above) != nil
     }
 
     public func opensAConstruct(_ quote: BlockQuote) -> Bool {

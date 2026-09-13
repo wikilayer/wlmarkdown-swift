@@ -30,4 +30,13 @@ struct DeclinedTests {
     @Test func aPlaceInsideACalloutIsStillMade() {
         #expect(declined("> [!NOTE]\n> Where.\n>\n> > [!MAP]\n> > 44.7866, 20.4489\n").isEmpty)
     }
+
+    @Test func aMarkerInsideAnOrdinaryQuoteIsTurnedDown() {
+        let inQuote = declined("> Plain quoted words.\n>\n> > [!MAP]\n> > 44.7866, 20.4489\n")
+        #expect(inQuote == [Declined(marker: "[!MAP]")],
+                "an ordinary quote hides what is under it, and the marker must not vanish from both answers")
+
+        let callout = declined("> Plain quoted words.\n>\n> > [!TIP]\n> > Inner.\n")
+        #expect(callout == [Declined(marker: "[!TIP]")])
+    }
 }

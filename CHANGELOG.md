@@ -41,6 +41,24 @@ file says only what changed between versions and what that asks of you.
 Changes are documented here in the format of
 [Keep a Changelog](https://keepachangelog.com/).
 
+## 0.4.0 - 2026-09-13
+
+### Fixed
+
+- `calloutClass(of:)`, `place(in:)` and `declined(in:)` answer about where a quote
+  stands, not only about the quote. An ordinary quote stops the dialect, so a `[!MAP]`
+  written inside one is not a map — `recognise` has always said so, and these three
+  did not: a host asking about that inner quote was told it was a map and drew one
+  where the site shows a quote. The same blindness left `declined(in:)` silent about
+  it, so the marker was missing from what the dialect made and from what it turned
+  down at once. That is a third way a quote is turned down, beside the two 0.3.4
+  named: a marker under a quote the dialect never entered.
+- 0.3.1 called these calls wiring rather than a change of behaviour and took a patch
+  number on that ground. They were behaviour, and they disagreed with the leading
+  port; the ground was wrong.
+- `Dialect()` reads and parses the rules once for the process rather than on every
+  construction. A host building one per link paid a YAML parse per link.
+
 ## 0.3.4 - 2026-09-13
 
 ### Added

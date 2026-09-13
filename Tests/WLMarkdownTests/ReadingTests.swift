@@ -44,6 +44,18 @@ struct ReadingTests {
                 "a tab is one character and several columns, and counting it as one loses the tail")
     }
 
+    @Test func whatAnOrdinaryQuoteHidesIsNotAConstruct() {
+        let source = "> Plain quoted words.\n>\n> > [!MAP]\n> > 44.7866, 20.4489\n"
+        let reading = Reading(source)
+        let inner = Document(parsing: source)
+            .children.compactMap { $0 as? BlockQuote }
+            .flatMap { $0.children.compactMap { $0 as? BlockQuote } }
+
+        #expect(inner.count == 1, "the source of this test no longer nests a quote")
+        #expect(inner.first.flatMap { reading.place(in: $0) } == nil,
+                "an ordinary quote stops the dialect, and a host must get the answer recognise gives")
+    }
+
     @Test func aQuoteThatIsNeitherOpensNothing() {
         let (written, reading) = quote("> Plain quoted words.\n")
         #expect(reading.calloutClass(of: written) == nil)
