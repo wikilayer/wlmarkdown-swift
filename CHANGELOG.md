@@ -54,9 +54,9 @@ Changes are documented here in the format of
 
 ### Changed
 
-- The corpus now names what the dialect turned down, case by case, and this port
-  answers it there. A caption written outside ASCII and a caption opening on tabs
-  went in with it, so the leading port is asked them too.
+- The corpus gained a `declined` key per case, naming what the dialect turned down,
+  and new cases along with it. If you run the corpus yourself, a decoder that refuses
+  unknown keys has to learn this one.
 - The minor moves with [the leading port](https://github.com/wikilayer/wlmarkdown),
   which fixes two answers of its own for this release and adds `Kinds()`, a list of
   node kinds that only a host registering goldmark renderers has a use for. There is
@@ -70,17 +70,16 @@ Changes are documented here in the format of
 
 ### Fixed
 
-- `declined(in:)` no longer reports a quote the dialect made an unreadable block of.
+- **Breaking for anyone counting what came back:** `declined(in:)` no longer reports
+  a quote the dialect made an unreadable block of. Ask `unreadable(in:)` of the quote
+  as well and you have what the old call gave you, with the two apart instead of run
+  together.
+
   It answered about quotes `place(in:)` turned down, and since 0.5.0 that call also
   stays silent about a point nowhere on Earth — so a host logging or badging what was
   turned down complained about a block it had just drawn, and the leading port
-  reported nothing for the same document.
-
-  **This narrows what the call returns.** If you were counting what the dialect could
-  not read, `declined(in:)` alone no longer counts it: ask `unreadable(in:)` of the
-  quote as well, and you have what the old call gave you, with the two apart instead
-  of run together. If you were logging it, this is the release that stops it crying
-  wolf and nothing is asked of you.
+  reported nothing for the same document. A host that only logs them needs no change
+  and gets a quieter log.
 - The words of an unreadable block are the whole quote's, not its first paragraph's.
 
   ```
@@ -91,12 +90,12 @@ Changes are documented here in the format of
   ```
 
   `recognise` and `unreadable(in:)` handed back `[!MAP] 999, 20` and now hand back
-  `[!MAP] 999, 20 The street I meant.` — one line, the paragraphs joined by a single
-  space and every run of blanks squeezed to one, as the words of a callout have
-  always been. Everything written below the coordinates was missing from the one
+  `[!MAP] 999, 20 The street I meant.` — one line, the quote's lines joined by a
+  single space with every run of blanks squeezed to one, as the words of a callout
+  have always been. Everything written below the coordinates was missing from the one
   place the author is shown what to fix. 0.5.0 said those words came back exactly as
-  they stand in the source; for a quote of more than one paragraph that was not true,
-  and this is where it becomes true.
+  they stand in the source; a quote is now read whole, but its lines still arrive
+  joined, so take that sentence as the markdown surviving rather than the layout.
 
   Markdown among them has always survived here, links included, so the other half of
   the leading port's fix for this release has no counterpart in this one.
