@@ -93,16 +93,15 @@ extension Dialect {
                     .joined(separator: " "))
                 continue
             }
-            if let inner = child as? BlockQuote, scan.openingLine(of: inner) == rules.mapMarker,
-               place(in: inner, scan: scan) != nil {
-                continue
-            }
-            spoken.append(words(of: child))
+            spoken.append(words(of: child, outside: scan))
         }
         return squeezed(spoken.joined(separator: " "))
     }
 
-    func words(of markup: any Markup) -> String {
+    func words(of markup: any Markup, outside scan: Scan? = nil) -> String {
+        if let scan, let quote = markup as? BlockQuote, place(in: quote, scan: scan) != nil {
+            return ""
+        }
         switch markup {
         case is CodeBlock:
             return ""
@@ -113,17 +112,17 @@ extension Dialect {
         case is SoftBreak, is LineBreak:
             return " "
         case let item as ListItem:
-            return withoutTaskMark(item.children.map { words(of: $0) }
+            return withoutTaskMark(item.children.map { words(of: $0, outside: scan) }
                 .filter { !$0.isEmpty }
                 .joined(separator: " "))
         default:
             break
         }
         if let inline = markup as? any InlineMarkup {
-            return inline.children.map { words(of: $0) }.joined()
+            return inline.children.map { words(of: $0, outside: scan) }.joined()
         }
         return markup.children
-            .map { words(of: $0) }
+            .map { words(of: $0, outside: scan) }
             .filter { !$0.isEmpty }
             .joined(separator: " ")
     }

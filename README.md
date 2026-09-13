@@ -11,7 +11,8 @@ let found = Dialect().recognise("> [!TIP]\n> Try the shorter form.\n")
 
 `Found` comes back flat and in document order, one entry per construct: a callout
 with its class, a map with its point and caption, a link with the scheme it names
-and the destination exactly as written.
+and the destination exactly as written, and a point nowhere on Earth as the words
+it was written with.
 
 ## What it recognises
 
@@ -24,6 +25,11 @@ follows is its caption. Both numbers are digits carrying an optional sign and an
 optional fraction, and nothing else: no exponent, no hexadecimal, no infinity. They
 come back as the source wrote them, digit for digit, because rounding a coordinate
 moves the point.
+
+A latitude may go as far as 90 and a longitude as far as 180, the poles and the
+meridian included. Past that the pair is still read and there is nowhere to put it,
+so the quote comes back as `kind: "unreadable"` carrying the words as they were
+written rather than as a map of a place the page does not name.
 
 A link may name a node instead of a URL, under the scheme `page:` or `block:`. The
 destination comes back character for character; which names exist is a question the
