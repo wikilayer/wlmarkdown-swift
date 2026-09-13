@@ -1,0 +1,49 @@
+import Markdown
+import Testing
+@testable import WLMarkdown
+
+struct ReadingTests {
+    private func quote(_ source: String) -> (BlockQuote, Reading) {
+        let document = Document(parsing: source)
+        guard let quote = document.child(at: 0) as? BlockQuote else {
+            fatalError("the source of this test is not a quote, so the test proves nothing")
+        }
+        return (quote, Reading(source))
+    }
+
+    @Test func aCalloutNamesItsClassRatherThanItsMarker() {
+        let (written, reading) = quote("> [!WARNING]\n> This cannot be undone.\n")
+        #expect(reading.calloutClass(of: written) == "warning",
+                "a host hangs a title and an icon on the class, not on the marker")
+    }
+
+    @Test func aMarkerSharingItsLineOpensNothing() {
+        let (written, reading) = quote("> [!NOTE] see below\n> Body.\n")
+        #expect(reading.calloutClass(of: written) == nil)
+        #expect(!reading.opensAConstruct(written))
+    }
+
+    @Test func aPlaceKeepsItsCoordinatesDigitForDigit() {
+        let (written, reading) = quote("> [!MAP]\n> 44.7866000, 20.4489\n> Belgrade.\n")
+        let place = reading.place(in: written)
+        #expect(place?.lat == "44.7866000",
+                "a trailing zero dropped is a coordinate parsed into a number, which this dialect refuses")
+        #expect(place?.lng == "20.4489")
+        #expect(place?.caption == "Belgrade.")
+    }
+
+    @Test func aQuoteThatIsNeitherOpensNothing() {
+        let (written, reading) = quote("> Plain quoted words.\n")
+        #expect(reading.calloutClass(of: written) == nil)
+        #expect(reading.place(in: written) == nil)
+        #expect(!reading.opensAConstruct(written))
+    }
+
+    @Test func aDestinationNamesItsSchemeOrNone() {
+        let dialect = Dialect()
+        #expect(dialect.scheme(in: "page:home") == "page",
+                "what follows a scheme is as often a name as a number")
+        #expect(dialect.scheme(in: "block:50386") == "block")
+        #expect(dialect.scheme(in: "https://example.invalid/page") == nil)
+    }
+}

@@ -28,6 +28,20 @@ file says only what changed between versions and what that asks of you.
 Changes are documented here in the format of
 [Keep a Changelog](https://keepachangelog.com/).
 
+## 0.3.1 - 2026-09-13
+
+### Added
+
+- `Reading`, which answers about nodes you have already parsed rather than about a
+  source string: `calloutClass(of:)` for a blockquote, `place(in:)` for one holding
+  a point, `opensAConstruct(_:)` for a quote carrying any of the dialect's markers,
+  and `isAutolink(_:)` for a link. `Dialect.scheme(in:)` names the scheme of a
+  destination, or none. A host building its own tree out of swift-markdown needs
+  these; with only `recognise` it would have to write the dialect's rules a second
+  time to know what it is looking at. The leading port answers the same questions
+  through its goldmark extensions, which is why this is wiring rather than a change
+  of behaviour, and why the number after the dot is the only one that moved.
+
 ## 0.3.0 - 2026-09-13
 
 First release, answering the corpus as the leading port's 0.3.0 does.
