@@ -41,6 +41,33 @@ file says only what changed between versions and what that asks of you.
 Changes are documented here in the format of
 [Keep a Changelog](https://keepachangelog.com/).
 
+## 0.5.0 - 2026-09-13
+
+### Added
+
+- `Reading.unreadable(in:)`, the words a quote wrote as a map when its point is
+  nowhere on Earth, exactly as they stand in the source. It answers about the
+  quotes `place(in:)` now turns down, and about no others.
+
+### Changed
+
+- A point nowhere on Earth is no longer a place. `rules.yaml` now names how far a
+  coordinate may go, `90` and `180`, beside the alphabets it already spells out, and
+  both are compared digit by digit rather than through a `Double`, so a number too
+  long for one is judged by the same rule. `recognise` returns `kind: "unreadable"`
+  carrying the words as written, and `place(in:)` returns nothing for such a quote.
+
+  Show them. What the block looks like is yours, as a callout's colour is; that the
+  reader sees the coordinates and learns they cannot be read is the point, because
+  whoever typed them is the only one who can fix them. Before this, `999, 999` drew
+  a map of a place the page does not name.
+
+  The bound is the last place there is, not the first one missing: `-90, 180` is a
+  point at the pole and stays a map. Four cases in the corpus hold that line — a
+  latitude past the pole, a longitude past the meridian, the pole itself, and a run
+  of digits too long for any float — so a port that answers any of them differently
+  goes red here rather than surprising a reader.
+
 ## 0.4.0 - 2026-09-13
 
 ### Fixed
