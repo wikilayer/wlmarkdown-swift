@@ -44,9 +44,15 @@ let source = page.body
 let reading = Reading(source)
 for quote in Document(parsing: source).children.compactMap({ $0 as? BlockQuote }) {
     if let place = reading.place(in: quote) { … }          // lat, lng, caption
+    if let written = reading.unreadable(in: quote) { … }   // a point nowhere on Earth
     if let named = reading.calloutClass(of: quote) { … }   // note, tip, warning …
 }
 ```
+
+A quote written as a map whose point is outside `90` and `180` is not a place, so
+`place(in:)` stays silent about it and `unreadable(in:)` hands back the words as
+they stand in the source. Show them: the only person who can fix such coordinates
+is the one who typed them.
 
 `opensAConstruct(_:)` says whether a quote carries any of the dialect's markers, and
 `isAutolink(_:)` tells a bracketed link from `<https://example.com>`. `Dialect`'s
