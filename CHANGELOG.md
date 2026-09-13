@@ -65,7 +65,7 @@ Changes are documented here in the format of
   The bound is the last place there is, not the first one missing: `-90, 180` is a
   point at the pole and stays a map. Four cases in the corpus hold that line — a
   latitude past the pole, a longitude past the meridian, the pole itself, and a run
-  of digits too long for any float — so a port that answers any of them differently
+  of digits no `Double` could hold — so a port that answers any of them differently
   goes red here rather than surprising a reader.
 
 ## 0.4.0 - 2026-09-13
