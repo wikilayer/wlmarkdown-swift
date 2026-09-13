@@ -49,7 +49,7 @@ extension Dialect {
         guard within(lat, rules.coordinate.latitudeWithin),
               within(lng, rules.coordinate.longitudeWithin)
         else {
-            return Found(kind: "unreadable", text: squeezed(lines.joined(separator: " ")))
+            return Found(kind: "unreadable", text: asWritten(quote, scan: scan))
         }
 
         let caption = lines.dropFirst(2)
@@ -58,6 +58,14 @@ extension Dialect {
             .joined(separator: " ")
 
         return Found(kind: "map", lat: lat, lng: lng, caption: caption)
+    }
+
+    func asWritten(_ quote: BlockQuote, scan: Scan) -> String {
+        let spoken = quote.children.map { child -> String in
+            guard let paragraph = child as? Paragraph else { return words(of: child) }
+            return scan.rawLines(of: paragraph).joined(separator: " ")
+        }
+        return squeezed(spoken.joined(separator: " "))
     }
 
     func reads(_ spoken: String) -> Bool {
