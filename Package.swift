@@ -12,7 +12,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-markdown.git", from: "0.8.0"),
-        .package(url: "https://github.com/botforge-pro/swift-embed", from: "1.5.0")
+        .package(url: "https://github.com/botforge-pro/swift-embed", from: "1.5.0"),
+        .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.3.0")
     ],
     targets: [
         .target(

@@ -1,5 +1,8 @@
 # wlmarkdown-swift
 
+[![Tests](https://github.com/wikilayer/wlmarkdown-swift/actions/workflows/tests.yml/badge.svg)](https://github.com/wikilayer/wlmarkdown-swift/actions/workflows/tests.yml)
+[![Documentation](https://github.com/wikilayer/wlmarkdown-swift/actions/workflows/documentation.yml/badge.svg)](https://wikilayer.github.io/wlmarkdown-swift/documentation/wlmarkdown/)
+
 The WikiLayer markdown dialect in Swift: GitHub-flavoured markdown, and then the
 constructs the dialect adds of its own. It is the Swift port of
 [wlmarkdown](https://github.com/wikilayer/wlmarkdown), which leads, and it answers
@@ -7,6 +10,7 @@ the same corpus of cases the Go port answers.
 
 ```swift
 let found = Dialect().recognise("> [!TIP]\n> Try the shorter form.\n")
+let plain = Dialect().plainText("Read **this** before `make test`.")
 ```
 
 `Found` comes back flat and in document order, one entry per construct: a callout
@@ -78,10 +82,17 @@ It recognises. A title for a callout, an icon, a colour, a link resolved against
 store: each of those belongs to whoever holds the pages, because a web page answers
 them one way and a phone app another.
 
+## Documentation
+
+The [Swift-DocC API reference](https://wikilayer.github.io/wlmarkdown-swift/documentation/wlmarkdown/)
+is generated from the public Swift API and deployed by GitHub Actions.
+
 ## The corpus
 
 `Sources/WLMarkdown/Resources/rules.yaml` holds what the dialect knows and
-`Tests/WLMarkdownTests/Resources/dialect.yaml` the cases that define it. Both are
+`Tests/WLMarkdownTests/Resources/dialect.yaml` the cases that define constructs,
+and `Tests/WLMarkdownTests/Resources/plain_text.yaml` the portable answers for
+`plainText`. All three are
 copies of the files in the leading port, refreshed with `make sync-corpus`, and the
 whole corpus runs here on every build. A case answered differently by the two ports
 goes red rather than reaching a reader.
@@ -120,6 +131,7 @@ has a corpus case, which is why the corpus alone does not prove the ports agree.
 ```sh
 make test          # the corpus, plus the rules tests
 make lint          # swiftlint
+make docs          # generate the Swift-DocC API reference
 make sync-corpus   # refresh rules.yaml and dialect.yaml from the leading port
 ```
 

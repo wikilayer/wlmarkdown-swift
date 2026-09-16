@@ -50,6 +50,14 @@ file says only what changed between versions and what that asks of you.
 Changes are documented here in the format of
 [Keep a Changelog](https://keepachangelog.com/).
 
+## 0.7.0 - 2026-09-16
+
+### Added
+
+- `Dialect.plainText(_:)` turns markdown into reader-visible text for search,
+  previews and indexing, following the shared `plain_text.yaml` corpus.
+- A generated Swift-DocC API reference, published through GitHub Pages.
+
 ## 0.6.0 - 2026-09-13
 
 ### Changed

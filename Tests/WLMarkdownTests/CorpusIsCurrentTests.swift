@@ -5,7 +5,8 @@ import Testing
 struct CorpusIsCurrentTests {
     static let copiedFromTheLeadingPort = [
         "Sources/WLMarkdown/Resources/rules.yaml",
-        "Tests/WLMarkdownTests/Resources/dialect.yaml"
+        "Tests/WLMarkdownTests/Resources/dialect.yaml",
+        "Tests/WLMarkdownTests/Resources/plain_text.yaml"
     ]
 
     @Test(
@@ -23,8 +24,8 @@ struct CorpusIsCurrentTests {
 
     @Test func theListNamesEveryCopySyncCorpusMakes() {
         #expect(
-            Self.copiedFromTheLeadingPort.count == 2,
-            "sync-corpus copies the rules to the library and the cases to the tests"
+            Self.copiedFromTheLeadingPort.count == 3,
+            "sync-corpus copies the rules to the library and both corpora to the tests"
         )
     }
 
