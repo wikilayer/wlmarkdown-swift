@@ -1,10 +1,15 @@
 CORPUS = ../wlmarkdown/corpus
 RULES = Sources/WLMarkdown/Resources
 CASES = Tests/WLMarkdownTests/Resources
+COMMENTCENSOR_VERSION ?= v0.3.0
 
 .DEFAULT_GOAL := build
 
-.PHONY: format lint test-build test docs build sync-corpus install
+.PHONY: install-tools format lint test-build test docs build sync-corpus install
+
+install-tools:
+	brew install swiftlint
+	python3 -m pip install --quiet git+https://github.com/botforge-pro/commentcensor.git@$(COMMENTCENSOR_VERSION)
 
 format:
 	swiftlint --fix
@@ -34,4 +39,4 @@ sync-corpus:
 	cp $(CORPUS)/plain_text.yaml $(CASES)/
 
 install:
-	brew install swiftlint
+	$(MAKE) install-tools
