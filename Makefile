@@ -7,7 +7,7 @@ COMMENTCENSOR = $(COMMENTCENSOR_ENV)/bin/commentcensor
 
 .DEFAULT_GOAL := build
 
-.PHONY: install-tools format comments lint test-build test docs build sync-corpus install
+.PHONY: install-tools format comments lint test-build test docs build sync-corpus install release
 
 install-tools:
 	brew install swiftlint
@@ -46,3 +46,7 @@ sync-corpus:
 
 install:
 	$(MAKE) install-tools
+
+release: build
+	@test -n "$(VERSION)" || (echo "usage: make release VERSION=0.7.0" && exit 1)
+	gh release create "v$(VERSION)" --title "v$(VERSION)" --generate-notes --target main
