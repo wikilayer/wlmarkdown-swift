@@ -1,13 +1,13 @@
 CORPUS = ../wlmarkdown/corpus
 RULES = Sources/WLMarkdown/Resources
 CASES = Tests/WLMarkdownTests/Resources
-COMMENTCENSOR_VERSION ?= v0.3.1
+COMMENTCENSOR_VERSION ?= v0.3.2
 COMMENTCENSOR_ENV = .build/commentcensor
 COMMENTCENSOR = $(COMMENTCENSOR_ENV)/bin/commentcensor
 
 .DEFAULT_GOAL := build
 
-.PHONY: install-tools format comments lint test-build test docs build sync-corpus install release
+.PHONY: install-tools format comments lint test-build test docs build sync-corpus install
 
 install-tools:
 	brew install swiftlint
@@ -46,7 +46,3 @@ sync-corpus:
 
 install:
 	$(MAKE) install-tools
-
-release: build
-	@test -n "$(VERSION)" || (echo "usage: make release VERSION=0.7.0" && exit 1)
-	gh release create "v$(VERSION)" --title "v$(VERSION)" --generate-notes --target main

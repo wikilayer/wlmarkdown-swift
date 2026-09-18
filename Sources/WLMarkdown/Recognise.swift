@@ -2,6 +2,7 @@ import Foundation
 import Markdown
 
 extension Dialect {
+    /// Returns dialect constructs in document order.
     public func recognise(_ source: String) -> [Found] {
         var found: [Found] = []
         let scan = Scan(dialect: self, source: source)

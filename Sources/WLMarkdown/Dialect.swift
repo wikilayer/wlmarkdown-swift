@@ -38,23 +38,28 @@ enum Rulebook {
     static let file = "rules.yaml"
 }
 
+/// The rules and readers of the WikiLayer markdown dialect.
 public struct Dialect: Sendable {
     let rules: Rules
 
     private static let written: Rules = Embedded.getYAML(Rulebook.bundle, path: Rulebook.file)
 
+    /// Creates the WikiLayer dialect from its bundled rules.
     public init() {
         rules = Self.written
     }
 
+    /// Every marker that can open a dialect construct, in sorted order.
     public var markers: [String] {
         (Array(rules.calloutClassByMarker.keys) + [rules.mapMarker]).sorted()
     }
 
+    /// Every callout class the dialect can report, in sorted order.
     public var classes: [String] {
         Array(Set(rules.calloutClassByMarker.values)).sorted()
     }
 
+    /// Every node-reference scheme the dialect can report, in sorted order.
     public var schemes: [String] {
         rules.refSchemes.sorted()
     }

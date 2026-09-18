@@ -1,54 +1,21 @@
 # Changelog
 
-A Swift package, `WLMarkdown`, at
-[github.com/wikilayer/wlmarkdown-swift](https://github.com/wikilayer/wlmarkdown-swift),
-built on [swift-markdown](https://github.com/swiftlang/swift-markdown):
+Notable changes to `WLMarkdown` are documented here in the format of
+[Keep a Changelog](https://keepachangelog.com/). The Go package
+[wlmarkdown](https://github.com/wikilayer/wlmarkdown) leads the shared rules and
+corpora; matching major and minor versions promise agreement on those cases.
 
-```swift
-.package(url: "https://github.com/wikilayer/wlmarkdown-swift.git", from: "0.6.0")
-```
+The package remains below 1.0 while its public API is settling. The README carries
+installation and usage examples, and the generated reference carries signatures.
 
-It recognises the markdown dialect of WikiLayer, a wiki whose pages are a tree of
-nodes: GitHub-flavoured markdown plus callouts, map embeds, and links naming a node
-instead of a URL.
+## 0.7.1 - 2026-09-18
 
-```markdown
-> [!WARNING]
-> This cannot be undone.
+### Changed
 
-Start at [the front page](page:home), or at [one paragraph](block:50386) of it.
-```
-
-It recognises and does nothing else. What title that callout wears, which icon and
-colour it gets, which address `page:home` resolves to: a web page answers each of
-those one way and a phone app another, so each belongs to the application holding
-the pages rather than to a parser.
-
-This is a port. [wlmarkdown](https://github.com/wikilayer/wlmarkdown) leads, both
-ports read the same rules and answer the same corpus, and the major and minor
-numbers move together to say so. What they promise is agreement on the corpus, and
-the corpus does not reach everything: the difference it cannot reach is named below,
-and the README says where the parsers underneath differ. Which version of
-swift-markdown this is built against is in `Package.swift`, where it cannot go stale.
-
-The version is 0.x because the shape is still settling: every reader of these two
-libraries so far has moved something in their API rather than working around it, so
-a minor may still change an answer you relied on. Read the entry before taking one.
-
-## Where the two ports do not agree
-
-One difference is left, and no corpus case can reach it, so a green corpus does not
-prove the ports answer alike. It is open in 0.6.0:
-
-- A bare URL is a link in Go and plain words here. The dialect asks every port to
-  switch linkifying on; swift-markdown offers no way to, so this one cannot until it
-  does.
-
-Signatures are not repeated here; the README carries an example of each call. This
-file says only what changed between versions and what that asks of you.
-
-Changes are documented here in the format of
-[Keep a Changelog](https://keepachangelog.com/).
+- Documented the complete public API and clarified the package boundary, setup,
+  corpus relationship, and one parser limitation. Runtime behavior is unchanged.
+- Updated commentcensor and removed release publication from the Makefile; releases
+  are published through the repository workflow.
 
 ## 0.7.0 - 2026-09-16
 

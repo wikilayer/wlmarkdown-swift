@@ -3,26 +3,36 @@
 [![Tests](https://github.com/wikilayer/wlmarkdown-swift/actions/workflows/tests.yml/badge.svg)](https://github.com/wikilayer/wlmarkdown-swift/actions/workflows/tests.yml)
 [![Documentation](https://github.com/wikilayer/wlmarkdown-swift/actions/workflows/documentation.yml/badge.svg)](https://wikilayer.github.io/wlmarkdown-swift/documentation/wlmarkdown/)
 
-The WikiLayer markdown dialect in Swift: GitHub-flavoured markdown, and then the
-constructs the dialect adds of its own. It is the Swift port of
-[wlmarkdown](https://github.com/wikilayer/wlmarkdown), which leads, and it answers
-the same corpus of cases the Go port answers.
+The Swift implementation of the WikiLayer markdown dialect. It recognises
+callouts, map embeds, and `page:` and `block:` links on top of
+[swift-markdown](https://github.com/swiftlang/swift-markdown). The Go package
+[wlmarkdown](https://github.com/wikilayer/wlmarkdown) leads the shared rules and
+test corpora.
+
+Add the package in `Package.swift`:
 
 ```swift
+.package(url: "https://github.com/wikilayer/wlmarkdown-swift.git", from: "0.7.0")
+```
+
+Then recognise structured constructs or extract reader-visible text:
+
+```swift
+import WLMarkdown
+
 let found = Dialect().recognise("> [!TIP]\n> Try the shorter form.\n")
 let plain = Dialect().plainText("Read **this** before `make test`.")
 ```
 
-`Found` comes back flat and in document order, one entry per construct: a callout
-with its class, a map with its point and caption, a link with the scheme it names
-and the destination exactly as written, and a point nowhere on Earth as the words
-it was written with.
+`recognise(_:)` returns a flat list in document order. Each `Found` value describes
+a callout, map, unreadable map, or link. `plainText(_:)` removes markdown syntax for
+search, previews, and indexing.
 
 ## What it recognises
 
 A blockquote whose first line is exactly `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`,
-`[!WARNING]` or `[!CAUTION]` is a callout of that class. A marker sharing its line
-with words, or written in lower case, leaves an ordinary quote.
+`[!WARNING]`, or `[!CAUTION]` is a callout. A marker sharing its line with words or
+written in another case leaves an ordinary quote.
 
 A `[!MAP]` marker followed by a line of two numbers is a map embed, and whatever
 follows is its caption. Both numbers are digits carrying an optional sign and an
@@ -30,101 +40,58 @@ optional fraction, and nothing else: no exponent, no hexadecimal, no infinity. T
 come back as the source wrote them, digit for digit, because rounding a coordinate
 moves the point.
 
-A latitude may go as far as 90 and a longitude as far as 180, the poles and the
-meridian included. Past that the pair is still read and there is nowhere to put it,
-so the quote comes back as `kind: "unreadable"` carrying the words as they were
-written rather than as a map of a place the page does not name.
+A latitude may go as far as 90 and a longitude as far as 180. A pair outside those
+bounds comes back as `kind: "unreadable"` with the words the author wrote.
 
-A link may name a node instead of a URL, under the scheme `page:` or `block:`. The
-destination comes back character for character; which names exist is a question the
-store answers.
+A bracketed link may name a node under the `page:` or `block:` scheme. The library
+reports its destination but does not resolve it against a store.
 
-`markers`, `classes` and `schemes` name what the dialect opens constructs with and
-what can come back in `Found`. Read them rather than writing down what is in them
-today.
+Read `markers`, `classes`, and `schemes` instead of copying the current values into
+an application.
 
 ## Asking about a document you parsed yourself
 
-A host that builds its own tree out of swift-markdown holds a `BlockQuote` and needs
-to know what it is. `Reading` answers that, over the source the document was parsed
-from:
+`Reading` answers questions about a swift-markdown tree an application already
+parsed. It must receive the same source string as the `Document`:
 
 ```swift
-let source = page.body
+import Markdown
+
+let source = "> [!MAP]\n> 44.7866, 20.4489\n> Belgrade\n"
 let reading = Reading(source)
 for quote in Document(parsing: source).children.compactMap({ $0 as? BlockQuote }) {
-    if let place = reading.place(in: quote) { … }          // lat, lng, caption
-    if let written = reading.unreadable(in: quote) { … }   // a point nowhere on Earth
-    if let named = reading.calloutClass(of: quote) { … }   // note, tip, warning …
+    if let place = reading.place(in: quote) {
+        print(place.lat, place.lng, place.caption)
+    }
 }
 ```
 
-A quote written as a map whose point is outside `90` and `180` is not a place, so
-`place(in:)` stays silent about it and `unreadable(in:)` hands back the words as
-they stand in the source. Show them: the only person who can fix such coordinates
-is the one who typed them.
-
-`opensAConstruct(_:)` says whether a quote carries any of the dialect's markers, and
-`isAutolink(_:)` tells a bracketed link from `<https://example.com>`. `Dialect`'s
-`scheme(in:)` names the scheme of a destination, or none.
-
-`reading.declined(in: document)` hands back the quotes the dialect turned down, one
-entry per quote with the marker it carried: a map whose coordinates did not read, or
-a callout written inside another callout's quote. Deciding that from outside would
-mean writing the dialect's rule for what opens a construct a second time.
-
-A `Reading` is built on one source string and answers by line and column, so it must
-be the string its document was parsed from.
+`place(in:)` returns valid maps, `unreadable(in:)` returns the words of an
+out-of-bounds map, and `declined(in:)` reports marked quotes the dialect left
+unchanged. `opensAConstruct(_:)`, `isAutolink(_:)`, and `scheme(in:)` expose the
+remaining classification rules without making the application repeat them.
 
 ## What it does not do
 
-It recognises. A title for a callout, an icon, a colour, a link resolved against a
-store: each of those belongs to whoever holds the pages, because a web page answers
-them one way and a phone app another.
+The library does not render constructs, decorate callouts, or resolve links. Those
+choices belong to the application holding the pages.
+
+## The corpus
+
+`rules.yaml`, `dialect.yaml`, and `plain_text.yaml` are copies of the leading Go
+port's rules and corpora. Refresh them with `make sync-corpus`; every build verifies
+the copies and their answers.
+
+## Port limitation
+
+The shared corpus passes in Swift and Go. One difference lies outside it: Go and
+the site linkify a bare URL, while swift-markdown leaves it as text and offers no
+linkification option. Bracketed links behave alike.
 
 ## Documentation
 
 The [Swift-DocC API reference](https://wikilayer.github.io/wlmarkdown-swift/documentation/wlmarkdown/)
-is generated from the public Swift API and deployed by GitHub Actions.
-
-## The corpus
-
-`Sources/WLMarkdown/Resources/rules.yaml` holds what the dialect knows and
-`Tests/WLMarkdownTests/Resources/dialect.yaml` the cases that define constructs,
-and `Tests/WLMarkdownTests/Resources/plain_text.yaml` the portable answers for
-`plainText`. All three are
-copies of the files in the leading port, refreshed with `make sync-corpus`, and the
-whole corpus runs here on every build. A case answered differently by the two ports
-goes red rather than reaching a reader.
-
-## Where the two ports differ
-
-Both read the same rules and answer the same cases, but they stand on different
-parsers, goldmark and [swift-markdown](https://github.com/swiftlang/swift-markdown),
-and the differences below are theirs rather than the dialect's.
-
-A marker line is read from the source rather than from the parsed text, because
-cmark trims a trailing space off a text node while goldmark keeps it, and
-`[!NOTE] ` with a space after it is not a marker. Where cmark rebuilds a paragraph
-and drops its source range, which it does when a table follows, the parsed text is
-used instead.
-
-A task list item keeps its `[ ]` in the text cmark hands back, so the mark is
-stripped here; goldmark reports the checkbox as a node of its own and never puts it
-in the words.
-
-A line whose source cannot be identified from the columns cmark reports — a line
-opening on tabs, whose expansion those columns do not carry — falls back to the
-parsed text. What that costs is the markdown of a caption written that way, a link
-arriving as its words rather than as `[words](page:1)`. Reading it blind would cost
-the tail of the line instead.
-
-Two differences are the dialect's and not a parser's, and neither is closed here.
-A bare URL is a link on the site and plain words here, because the dialect asks a
-port to switch linkifying on and swift-markdown offers no way to. And what a
-callout's words are when a construct is nested deeper than its own children is
-answered differently by the two ports. Both are named in the changelog and neither
-has a corpus case, which is why the corpus alone does not prove the ports agree.
+is generated and published by GitHub Actions.
 
 ## Running it
 
@@ -132,8 +99,17 @@ has a corpus case, which is why the corpus alone does not prove the ports agree.
 make test          # the corpus, plus the rules tests
 make lint          # swiftlint
 make docs          # generate the Swift-DocC API reference
-make sync-corpus   # refresh rules.yaml and dialect.yaml from the leading port
+make build         # all checks and the package build
+make sync-corpus   # refresh rules.yaml and both corpora from the leading port
 ```
+
+Releases are published by the repository's
+[Release workflow](https://github.com/wikilayer/wlmarkdown-swift/actions/workflows/release.yml),
+after it repeats the complete build.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
 
 ## Lines of Code
 
