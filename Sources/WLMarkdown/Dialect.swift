@@ -22,6 +22,7 @@ struct Rules: Codable, Sendable {
   let mapMarker: String
   let coordinate: Coordinate
   let blanks: String
+  let marks: String
   let refSchemes: [String]
 
   enum CodingKeys: String, CodingKey {
@@ -29,6 +30,7 @@ struct Rules: Codable, Sendable {
     case mapMarker = "map_marker"
     case coordinate
     case blanks
+    case marks
     case refSchemes = "ref_schemes"
   }
 }

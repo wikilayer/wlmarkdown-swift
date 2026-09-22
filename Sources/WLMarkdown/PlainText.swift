@@ -3,9 +3,23 @@ import Markdown
 extension Dialect {
   /// Returns the reader-visible words in a markdown document.
   public func plainText(_ source: String) -> String {
+    guard saysSomethingInMarkdown(source) else { return squeezed(source) }
     let document = Document(parsing: source)
     let reading = Reading(source, dialect: self)
     return squeezed(plainWords(in: document, reading: reading))
+  }
+
+  private func saysSomethingInMarkdown(_ source: String) -> Bool {
+    carriesAMark(source) || opensOnADigit(source)
+  }
+
+  private func carriesAMark(_ source: String) -> Bool {
+    source.contains { rules.marks.contains($0) }
+  }
+
+  private func opensOnADigit(_ source: String) -> Bool {
+    let opening = source.drop { rules.blanks.contains($0) }.first
+    return opening.map { rules.coordinate.digits.contains($0) } ?? false
   }
 
   private func plainWords(in markup: any Markup, reading: Reading) -> String {
