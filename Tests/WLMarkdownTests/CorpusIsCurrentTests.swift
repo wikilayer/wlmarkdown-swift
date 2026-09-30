@@ -23,7 +23,7 @@ struct CorpusIsCurrentTests {
       Comment(
         rawValue:
           "\(path) is not the file the leading port holds, so this port answers an older "
-          + "dialect than the others; run make sync-corpus"))
+          + "dialect than the others; run make sync-corpus in wlmarkdown"))
   }
 
   @Test func theListNamesEveryCopySyncCorpusMakes() {
