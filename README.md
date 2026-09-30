@@ -79,7 +79,7 @@ choices belong to the application holding the pages.
 ## The corpus
 
 `rules.yaml`, `dialect.yaml`, and `plain_text.yaml` are copies of the leading Go
-port's rules and corpora. Refresh them with `make sync-corpus`; every build verifies
+port's rules and corpora. Refresh them with `make sync-corpus` in wlmarkdown; every build verifies
 the copies and their answers.
 
 ## Port limitation
@@ -100,7 +100,7 @@ make test          # the corpus, plus the rules tests
 make lint          # swiftlint
 make docs          # generate the Swift-DocC API reference
 make build         # all checks and the package build
-make sync-corpus   # refresh rules.yaml and both corpora from the leading port
+make -C ../wlmarkdown sync-corpus   # refresh rules.yaml and both corpora
 ```
 
 Releases are published by the repository's
