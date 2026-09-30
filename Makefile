@@ -1,10 +1,6 @@
-CORPUS = ../wlmarkdown/corpus
-RULES = Sources/WLMarkdown/Resources
-CASES = Tests/WLMarkdownTests/Resources
-
 .DEFAULT_GOAL := build
 
-.PHONY: install-tools format comments lint test-build test docs build sync-corpus install
+.PHONY: install-tools format comments lint test-build test docs build install
 
 install-tools:
 	brew install swiftlint swift-format
@@ -35,11 +31,6 @@ docs:
 
 build: lint test-build test docs
 	swift build
-
-sync-corpus:
-	cp $(CORPUS)/rules.yaml $(RULES)/
-	cp $(CORPUS)/dialect.yaml $(CASES)/
-	cp $(CORPUS)/plain_text.yaml $(CASES)/
 
 install:
 	$(MAKE) install-tools
